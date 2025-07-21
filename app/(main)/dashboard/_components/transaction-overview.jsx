@@ -19,7 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../../components/ui/card";
 import { cn } from "../../../../lib/utils";
 
 const COLORS = [
@@ -72,10 +77,10 @@ export function DashboardOverview({ accounts, transactions }) {
   );
 
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       {/* Recent Transactions */}
       <Card className="w-full">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
           <CardTitle className="text-base font-medium">
             Recent Transactions
           </CardTitle>
@@ -83,7 +88,7 @@ export function DashboardOverview({ accounts, transactions }) {
             value={selectedAccountId}
             onValueChange={setSelectedAccountId}
           >
-            <SelectTrigger className="w-full sm:w-[140px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Select account" />
             </SelectTrigger>
             <SelectContent>
@@ -95,47 +100,45 @@ export function DashboardOverview({ accounts, transactions }) {
             </SelectContent>
           </Select>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentTransactions.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4 text-sm">
-                No recent transactions
-              </p>
-            ) : (
-              recentTransactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium">
-                      {transaction.description || "Untitled Transaction"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(transaction.date), "PP")}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1 sm:mt-0">
-                    <div
-                      className={cn(
-                        "flex items-center text-sm",
-                        transaction.type === "EXPENSE"
-                          ? "text-red-500"
-                          : "text-green-500"
-                      )}
-                    >
-                      {transaction.type === "EXPENSE" ? (
-                        <ArrowDownRight className="mr-1 h-4 w-4" />
-                      ) : (
-                        <ArrowUpRight className="mr-1 h-4 w-4" />
-                      )}
-                      ${transaction.amount.toFixed(2)}
-                    </div>
-                  </div>
+        <CardContent className="space-y-4">
+          {recentTransactions.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4 text-sm">
+              No recent transactions
+            </p>
+          ) : (
+            recentTransactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-2 last:border-none"
+              >
+                <div className="space-y-0.5 max-w-[70%] sm:max-w-[60%]">
+                  <p className="text-sm font-medium truncate">
+                    {transaction.description || "Untitled Transaction"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(transaction.date), "PP")}
+                  </p>
                 </div>
-              ))
-            )}
-          </div>
+                <div className="flex items-center gap-2 mt-1 sm:mt-0 text-sm">
+                  <span
+                    className={cn(
+                      "flex items-center",
+                      transaction.type === "EXPENSE"
+                        ? "text-red-500"
+                        : "text-green-500"
+                    )}
+                  >
+                    {transaction.type === "EXPENSE" ? (
+                      <ArrowDownRight className="mr-1 h-4 w-4" />
+                    ) : (
+                      <ArrowUpRight className="mr-1 h-4 w-4" />
+                    )}
+                    ${transaction.amount.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
 
@@ -146,20 +149,20 @@ export function DashboardOverview({ accounts, transactions }) {
             Monthly Expense Breakdown
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0 pb-5">
+        <CardContent className="pt-2 pb-6">
           {pieChartData.length === 0 ? (
             <p className="text-center text-muted-foreground py-4 text-sm">
               No expenses this month
             </p>
           ) : (
-            <div className="h-[300px] max-w-full">
+            <div className="h-[280px] sm:h-[320px] md:h-[360px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieChartData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius="70%"
                     fill="#8884d8"
                     dataKey="value"
                     label={({ name, value }) =>
@@ -181,7 +184,7 @@ export function DashboardOverview({ accounts, transactions }) {
                       borderRadius: "var(--radius)",
                     }}
                   />
-                  <Legend />
+                  <Legend layout="horizontal" verticalAlign="bottom" />
                 </PieChart>
               </ResponsiveContainer>
             </div>
