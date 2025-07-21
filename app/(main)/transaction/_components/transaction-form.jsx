@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import useFetch from "../../../../hooks/use-fetch";
 import { toast } from "sonner";
 
@@ -36,10 +36,9 @@ export function AddTransactionForm({
   categories,
   editMode = false,
   initialData = null,
+  editId = null,
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editId = searchParams.get("edit");
 
   const {
     register,
@@ -130,7 +129,7 @@ export function AddTransactionForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Receipt Scanner - Only show in create mode */}
+      {/* ✅ Receipt Scanner - only in create mode */}
       {!editMode && <ReceiptScanner onScanComplete={handleScanComplete} />}
 
       {/* Type */}
@@ -153,7 +152,7 @@ export function AddTransactionForm({
         )}
       </div>
 
-      {/* Amount and Account */}
+      {/* Amount + Account */}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
           <label className="text-sm font-medium">Amount</label>
@@ -184,10 +183,7 @@ export function AddTransactionForm({
                 </SelectItem>
               ))}
               <CreateAccountDrawer>
-                <Button
-                  variant="ghost"
-                  className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                >
+                <Button variant="ghost" className="w-full pl-8 text-left">
                   Create Account
                 </Button>
               </CreateAccountDrawer>
@@ -264,12 +260,12 @@ export function AddTransactionForm({
         )}
       </div>
 
-      {/* Recurring Toggle */}
+      {/* Recurring toggle */}
       <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-        <div className="space-y-0.5">
+        <div>
           <label className="text-base font-medium">Recurring Transaction</label>
           <div className="text-sm text-muted-foreground">
-            Set up a recurring schedule for this transaction
+            Set a recurring schedule
           </div>
         </div>
         <Switch
@@ -278,7 +274,7 @@ export function AddTransactionForm({
         />
       </div>
 
-      {/* Recurring Interval */}
+      {/* Recurring interval */}
       {isRecurring && (
         <div className="space-y-2">
           <label className="text-sm font-medium">Recurring Interval</label>
@@ -304,7 +300,7 @@ export function AddTransactionForm({
         </div>
       )}
 
-      {/* Actions */}
+      {/* Submit / Cancel */}
       <div className="flex gap-4">
         <Button
           type="button"

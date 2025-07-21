@@ -1,30 +1,28 @@
 import { getUserAccounts } from "../../../../actions/dashboard";
+import { getTransaction } from "../../../../actions/transaction";
 import { defaultCategories } from "../../../../data/categories";
 import { AddTransactionForm } from "../_components/transaction-form";
-import { getTransaction } from "../../../../actions/transaction";
 
-// ✅ Final Next.js 15+ compatible server component
 export default async function AddTransactionPage({ searchParams }) {
+  const editId =  searchParams?.edit || null;
   const accounts = await getUserAccounts();
-
-  const editId = searchParams?.get?.("edit"); // ✅ Safe access using .get()
 
   let initialData = null;
   if (editId) {
-    const transaction = await getTransaction(editId);
-    initialData = transaction;
+    initialData = await getTransaction(editId);
   }
 
   return (
     <div className="max-w-3xl mx-auto px-5">
-      <div className="flex justify-center md:justify-normal mb-8">
-        <h1 className="text-5xl gradient-title">Add Transaction</h1>
-      </div>
+      <h1 className="text-4xl font-bold mb-6">
+        {editId ? "Edit Transaction" : "Create Transaction"}
+      </h1>
       <AddTransactionForm
         accounts={accounts}
         categories={defaultCategories}
         editMode={!!editId}
         initialData={initialData}
+        editId={editId}
       />
     </div>
   );
