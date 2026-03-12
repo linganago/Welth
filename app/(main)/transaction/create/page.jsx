@@ -4,7 +4,10 @@ import { defaultCategories } from "../../../../data/categories";
 import { AddTransactionForm } from "../_components/transaction-form";
 
 export default async function AddTransactionPage({ searchParams }) {
-  const editId =  searchParams?.edit || null;
+
+  const params = await searchParams;   // ✅ await first
+  const editId = params?.edit || null;
+
   const accounts = await getUserAccounts();
 
   let initialData = null;
@@ -17,6 +20,7 @@ export default async function AddTransactionPage({ searchParams }) {
       <h1 className="text-4xl font-bold mb-6">
         {editId ? "Edit Transaction" : "Create Transaction"}
       </h1>
+
       <AddTransactionForm
         accounts={accounts}
         categories={defaultCategories}
