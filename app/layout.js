@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "../components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
               <p>Manage Finance with Intelligence</p>
             </div>
           </footer>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
