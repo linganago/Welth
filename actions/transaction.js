@@ -195,38 +195,46 @@ export async function updateTransaction(id, data) {
 }
 
 // Get User Transactions
-export async function getUserTransactions(query = {}) {
-  try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+export async function getUserTransactions({ accountId, cursor, pageSize = 20, type, startDate, endDate } = {}) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
 
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+  const user = await db.user.findUnique({ where: { clerkUserId: userId } });
+  if (!user) throw new Error("User not found");
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+  const where = {
+    userId: user.id,
+    ...(accountId && { accountId }),
+    ...(type && { type }),
+    ...(startDate || endDate) && {
+      date: {
+        ...(startDate && { gte: new Date(startDate) }),
+        ...(endDate && { lte: new Date(endDate) }),
+      }
+    },
+  };
 
-    const transactions = await db.transaction.findMany({
-      where: {
-        userId: user.id,
-        ...query,
-      },
-      include: {
-        account: true,
-      },
-      orderBy: {
-        date: "desc",
-      },
-    });
+  const transactions = await db.transaction.findMany({
+    where,
+    take: pageSize + 1,         // fetch one extra to determine if next page exists
+    ...(cursor && {
+      cursor: { id: cursor },
+      skip: 1,                  // skip the cursor row itself
+    }),
+    orderBy: { date: "desc" },
+    include: { account: { select: { name: true } } },
+  });
 
-    return { success: true, data: transactions };
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  const hasNextPage = transactions.length > pageSize;
+  const items = hasNextPage ? transactions.slice(0, -1) : transactions;
+  const nextCursor = hasNextPage ? items[items.length - 1].id : null;
+
+  return {
+    items: items.map(serializeAmount),
+    nextCursor,
+    hasNextPage,
+  };
 }
-
 // Scan Receipt
 export async function scanReceipt(file) {
   try {
